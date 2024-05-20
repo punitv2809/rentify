@@ -11,13 +11,8 @@ require('dotenv').config();
 const app = express();
 
 const isDev = process.env.NODE_ENV === 'development';
-if (isDev) {
-    app.use(cors()); // Enable CORS for development only
-} else {
-    app.use(cors({
-        origin: 'https://rentify-frontend.netlify.app/'
-    }));
-}
+app.use(cors());
+
 // Create an Express application
 app.use(bodyParser.json());
 
