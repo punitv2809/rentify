@@ -13,6 +13,10 @@ const app = express();
 const isDev = process.env.NODE_ENV === 'development';
 if (isDev) {
     app.use(cors()); // Enable CORS for development only
+} else {
+    app.use(cors({
+        origin: 'https://rentify-frontend.netlify.app/'
+    }));
 }
 // Create an Express application
 app.use(bodyParser.json());
