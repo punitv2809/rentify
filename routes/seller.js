@@ -3,6 +3,7 @@ const verifyToken = require('../middlewares/auth');
 const verifySellerRole = require('../middlewares/sellerRole');
 const PropertyValidationSchema = require('../validations/property');
 const Property = require('../models/seller/property');
+const User = require('../models/user');
 const router = express.Router();
 
 router.post('/property', verifyToken, verifySellerRole, async (req, res) => {
@@ -144,6 +145,22 @@ router.delete('/property/:propertyId', verifyToken, verifySellerRole, async (req
     }
 });
 
+router.get('/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        // Find the property by ID
+        const user = await User.find({ _id: userId, role: 'seller' });
+
+        if (!user) {
+            return res.status(404).json({ error: 'user not found' });
+        }
+
+        res.status(200).json(user); // Return the user data
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 
 module.exports = router;
