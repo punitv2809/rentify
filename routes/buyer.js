@@ -1,6 +1,6 @@
 const express = require('express');
 const verifyToken = require('../middlewares/auth');
-const Property = require('../models/seller/property'); // Assuming your property model path
+const Property = require('../models/seller/property');
 const router = express.Router();
 
 function convertFilters(filters) {

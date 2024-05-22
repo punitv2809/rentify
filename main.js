@@ -8,6 +8,8 @@ const seller = require('./routes/seller');
 const buyer = require('./routes/buyer');
 
 require('dotenv').config();
+
+
 const app = express();
 
 const isDev = process.env.NODE_ENV === 'development';

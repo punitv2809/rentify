@@ -4,6 +4,10 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { UserValidationSchema, UserLoginSchema } = require('../validations/user');
+const Property = require('../models/seller/property');
+const verifyToken = require('../middlewares/auth');
+const sendPropertyDetailMail = require('../utils/email');
+const { message } = require('../validations/property');
 
 router.post('/', async (req, res) => {
     console.log(req.body);
@@ -53,7 +57,6 @@ router.post('/login', async (req, res) => {
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
-        console.log(user);
         // Compare password hashes
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
@@ -70,6 +73,27 @@ router.post('/login', async (req, res) => {
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Server error' });
+    }
+});
+
+router.get('/send-property/:propertyId', verifyToken, async (req, res) => {
+    const { propertyId } = req.params;
+    try {
+        // Find property by ID
+        const property = await Property.findById(propertyId).select('-userId');
+        if (!property) {
+            return res.status(404).json({ error: 'Property not found' });
+        }
+        // also get the user
+        const user = await User.findById(req.user.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        sendPropertyDetailMail(user, property);
+        res.status(200).json({ message: 'Property sent successfully' });
+    } catch (error) {
+        console.error('Error fetching property:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
